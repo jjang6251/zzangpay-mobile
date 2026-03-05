@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>ZZANGPAY MOBILE</Text>
+      <Text>ZZANGPAY MOBILE version 0.0.1</Text>
       <StatusBar style="auto" />
     </View>
   );
