@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store";
 /**
  * expo-secure-store는 (키-값) 쌍을 암호화하여 기기 로컬에 안전하게 저장한다.
  */
-const PRIVATE_KEY = "zzzzzzpay";
+const PRIVATE_KEY = "zzzzzzpay.private";
 
 export type WalletInfo = {
     address: string;
