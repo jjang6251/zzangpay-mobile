@@ -48,9 +48,7 @@ async function getTestWalletContract(): Promise<WalletAndContractInfo> {
 }
 
 export async function getUserTotalBalance(): Promise<string> {
-    const zusdc = await getTestWalletContract();
-    const contract = zusdc.contract;
-    const wallet = zusdc.wallet;
+    const {contract, wallet} = await getTestWalletContract();
 
     const balance = await contract.balanceOf(wallet.address);
     const decimals = await contract.decimals();
