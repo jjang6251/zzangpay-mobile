@@ -7,9 +7,9 @@ const ZUSDC_CONTRACT_ADDRESS = "0x6fe89141175341e5C27B7a4C458d28781c52208a";
 
 const abi = artifact.abi;
 
-const rpcUrl = process.env.EXPO_PUBLIC_EPOLIA_RPC_URL;
+const rpcUrl = process.env.EXPO_PUBLIC_SEPOLIA_RPC_URL;
 if (!rpcUrl) {
-    throw new Error("Missing EXPO_PUBLIC_EPOLIA_RPC_URL in env");
+    throw new Error("Missing EXPO_PUBLIC_SEPOLIA_RPC_URL in env");
 }
 
 const provider = new ethers.JsonRpcProvider(rpcUrl);
