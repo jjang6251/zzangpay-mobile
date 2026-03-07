@@ -1,4 +1,3 @@
-import "react-native-get-random-values";
 import { ethers } from "ethers";
 import * as SecureStore from "expo-secure-store";
 
