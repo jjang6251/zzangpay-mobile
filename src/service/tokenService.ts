@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import * as SecureStore from "expo-secure-store";
 import artifact from "../../artifacts/Zusdc.json";
+import {loadWallet} from "./walletService";
 
 const PRIVATE_KEY = "zzzzzzpay.private";
 const ZUSDC_CONTRACT_ADDRESS = "0x6fe89141175341e5C27B7a4C458d28781c52208a";
@@ -21,16 +22,13 @@ type WalletAndContractInfo = {
 
 
 async function getUserWalletContract(): Promise<WalletAndContractInfo> {
-    const pk = await SecureStore.getItemAsync(PRIVATE_KEY);
-    if (!pk) {
-        throw new Error("Missing User PrivateKey");
-    }
-    const wallet = new ethers.Wallet(pk, provider);
+    const wallet = await loadWallet();
+    if (!wallet) throw new Error("No wallet found");
 
     return {
         wallet: wallet,
         contract: new ethers.Contract(ZUSDC_CONTRACT_ADDRESS, abi, wallet)
-    }
+    };
 }
 
 async function getTestWalletContract(): Promise<WalletAndContractInfo> {

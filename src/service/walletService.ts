@@ -1,10 +1,5 @@
 import { ethers } from "ethers";
-import * as SecureStore from "expo-secure-store";
-
-/**
- * expo-secure-store는 (키-값) 쌍을 암호화하여 기기 로컬에 안전하게 저장한다.
- */
-const PRIVATE_KEY = "zzzzzzpay.private";
+import {saveWalletKey, getWalletKey, clearWalletKey} from "./keyStorage";
 
 export type WalletInfo = {
     address: string;
@@ -15,7 +10,7 @@ export type WalletInfo = {
  * @returns pk 존재 여부 boolean 값
  */
 export async function hasWallet(): Promise<boolean> {
-    const pk = await SecureStore.getItemAsync(PRIVATE_KEY);
+    const pk = await getWalletKey();
     // !! boolean 값만 리턴
     return !!pk;
 }
@@ -26,7 +21,7 @@ export async function hasWallet(): Promise<boolean> {
  */
 export async function createAndSaveWallet(): Promise<WalletInfo> {
     const wallet = ethers.Wallet.createRandom();
-    await SecureStore.setItemAsync(PRIVATE_KEY, wallet.privateKey);
+    await saveWalletKey(wallet.privateKey);
     return { address: wallet.address }
 }
 
@@ -34,7 +29,7 @@ export async function createAndSaveWallet(): Promise<WalletInfo> {
  * 사용자 Wallet 정보 load
  */
 export async function loadWallet(): Promise<ethers.Wallet | null> {
-    const pk = await SecureStore.getItemAsync(PRIVATE_KEY);
+    const pk = await getWalletKey();
     if(!pk) return null;
     return new ethers.Wallet(pk);
 }
@@ -43,5 +38,5 @@ export async function loadWallet(): Promise<ethers.Wallet | null> {
  * 사용자 Wallet 삭제
  */
 export async function resetWallet(): Promise<void> {
-    await SecureStore.deleteItemAsync(PRIVATE_KEY);
+    await clearWalletKey();
 }
