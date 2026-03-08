@@ -1,9 +1,7 @@
 import { ethers } from "ethers";
-import * as SecureStore from "expo-secure-store";
 import artifact from "../../artifacts/Zusdc.json";
 import {loadWallet} from "./walletService";
 
-const PRIVATE_KEY = "zzzzzzpay.private";
 const ZUSDC_CONTRACT_ADDRESS = "0x6fe89141175341e5C27B7a4C458d28781c52208a";
 
 const abi = artifact.abi;
@@ -46,7 +44,7 @@ async function getTestWalletContract(): Promise<WalletAndContractInfo> {
 }
 
 export async function getUserTotalBalance(): Promise<string> {
-    const {contract, wallet} = await getTestWalletContract();
+    const {contract, wallet} = await getUserWalletContract();
 
     const balance = await contract.balanceOf(wallet.address);
     const decimals = await contract.decimals();

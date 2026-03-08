@@ -16,6 +16,17 @@ export async function hasWallet(): Promise<boolean> {
 }
 
 /**
+ * 기존 private key 가져와서 저장
+ * @throws 유효하지 않은 키일 경우
+ */
+export async function importAndSaveWallet(pk: string): Promise<WalletInfo> {
+    if (!isValidKey(pk)) throw new Error("유효하지 않은 private key예요.");
+    const wallet = new ethers.Wallet(pk);
+    await saveWalletKey(pk);
+    return { address: wallet.address };
+}
+
+/**
  * wallet 생성과 저장
  * @returns WalletInfo 반환
  */
@@ -30,8 +41,10 @@ export async function createAndSaveWallet(): Promise<WalletInfo> {
  */
 export async function loadWallet(): Promise<ethers.Wallet | null> {
     const pk = await getWalletKey();
-    if(!pk) return null;
-    return new ethers.Wallet(pk);
+    const rpcUrl = process.env.EXPO_PUBLIC_SEPOLIA_RPC_URL;
+    if (!pk || !rpcUrl) return null;
+    const provider = new ethers.JsonRpcProvider(rpcUrl);
+    return new ethers.Wallet(pk, provider);
 }
 
 /**
@@ -39,4 +52,16 @@ export async function loadWallet(): Promise<ethers.Wallet | null> {
  */
 export async function resetWallet(): Promise<void> {
     await clearWalletKey();
+}
+
+/**
+ * 입력 받은 private 키가 유효한 키인지 판별
+ */
+export function isValidKey(pk: string): boolean {
+    try {
+        new ethers.Wallet(pk);
+        return true;
+    } catch {
+        return false;
+    }
 }
