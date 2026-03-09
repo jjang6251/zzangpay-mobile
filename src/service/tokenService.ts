@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import artifact from "../../artifacts/Zusdc.json";
-import {loadWallet} from "./walletService";
+import { loadWallet } from "./walletService";
 
 const ZUSDC_CONTRACT_ADDRESS = "0x6fe89141175341e5C27B7a4C458d28781c52208a";
 
@@ -44,10 +44,38 @@ async function getTestWalletContract(): Promise<WalletAndContractInfo> {
 }
 
 export async function getUserTotalBalance(): Promise<string> {
-    const {contract, wallet} = await getUserWalletContract();
+    const { contract, wallet } = await getUserWalletContract();
 
     const balance = await contract.balanceOf(wallet.address);
     const decimals = await contract.decimals();
 
     return ethers.formatUnits(balance, decimals);
+}
+
+export async function sendToken(toAddress: string, amount: number): Promise<string> {
+    if (!ethers.isAddress(toAddress)) {
+        throw new Error("유효하지 않은 주소예요.");
+    }
+    if (amount <= 0) {
+        throw new Error("전송 금액은 0보다 커야 해요.");
+    }
+
+    const { contract, wallet } = await getUserWalletContract();
+    const decimals = await contract.decimals();
+    const parsedAmount = ethers.parseUnits(amount.toString(), decimals);
+
+    const balance = await contract.balanceOf(wallet.address);
+    if (balance < parsedAmount) {
+        throw new Error("ZUSDC 잔액이 부족해요.");
+    }
+
+    const ethBalance = await wallet.provider!.getBalance(wallet.address);
+    if (ethBalance === 0n) {
+        throw new Error("가스비로 사용할 ETH가 없어요.");
+    }
+
+    const tx = await contract.transfer(toAddress, parsedAmount);
+    const receipt = await tx.wait();
+
+    return receipt.hash;
 }

@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BalanceCard from "../components/BalanceCard";
+import SendModal from "../components/SendModal";
 import { getUserTotalBalance } from "../service/tokenService";
 import { loadWallet, resetWallet } from "../service/walletService";
 import { RootStackParamList } from "../types/navigation";
@@ -30,6 +31,7 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [sendVisible, setSendVisible] = useState(false);
 
   const fetchBalance = useCallback(async () => {
     try {
@@ -154,7 +156,23 @@ export default function HomeScreen() {
           walletAddress={walletAddress}
           onRefresh={onRefresh}
         />
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.sendButton,
+            pressed && styles.sendButtonPressed,
+          ]}
+          onPress={() => setSendVisible(true)}
+        >
+          <Text style={styles.sendButtonText}>송금</Text>
+        </Pressable>
       </ScrollView>
+
+      <SendModal
+        visible={sendVisible}
+        onClose={() => setSendVisible(false)}
+        onSendComplete={onRefresh}
+      />
     </SafeAreaView>
   );
 }
@@ -262,5 +280,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 24,
     paddingBottom: 40,
+  },
+  sendButton: {
+    marginTop: 20,
+    backgroundColor: "#3182f6",
+    borderRadius: 16,
+    paddingVertical: 18,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+  },
+  sendButtonPressed: {
+    opacity: 0.82,
+  },
+  sendButtonText: {
+    color: "#ffffff",
+    fontSize: 17,
+    fontWeight: "700" as const,
   },
 });
