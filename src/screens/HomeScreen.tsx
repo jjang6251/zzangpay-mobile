@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
-  Dimensions,
   Modal,
   Pressable,
   RefreshControl,
@@ -10,8 +9,6 @@ import {
   Text,
   View,
 } from "react-native";
-
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -89,9 +86,10 @@ export default function HomeScreen() {
   }, [navigation]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerSpacer} />
+        <Text style={styles.headerLogo}>zzangpay</Text>
         <Pressable
           onPress={handleMenuOpen}
           style={({ pressed }) => [styles.menuButton, pressed && { opacity: 0.7 }]}
@@ -101,6 +99,7 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
+      {/* Menu Modal */}
       <Modal
         visible={menuVisible}
         transparent
@@ -138,9 +137,11 @@ export default function HomeScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* Scrollable content */}
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -164,9 +165,36 @@ export default function HomeScreen() {
           ]}
           onPress={() => setSendVisible(true)}
         >
+          <Text style={styles.sendButtonIcon}>↑</Text>
           <Text style={styles.sendButtonText}>송금</Text>
         </Pressable>
       </ScrollView>
+
+      {/* Bottom Tab Bar */}
+      <View style={styles.tabBar}>
+        <View style={[styles.tabItem, styles.tabItemActive]}>
+          <Text style={[styles.tabIcon, styles.tabIconActive]}>⌂</Text>
+          <Text style={[styles.tabLabel, styles.tabLabelActive]}>홈</Text>
+        </View>
+
+        <Pressable
+          style={styles.tabItem}
+          onPress={() => navigation.navigate("TransactionHistory")}
+        >
+          <Text style={styles.tabIcon}>⏱</Text>
+          <Text style={styles.tabLabel}>활동</Text>
+        </Pressable>
+
+        <View style={styles.tabItem}>
+          <Text style={styles.tabIcon}>◎</Text>
+          <Text style={styles.tabLabel}>자산</Text>
+        </View>
+
+        <Pressable style={styles.tabItem} onPress={handleMenuOpen}>
+          <Text style={styles.tabIcon}>⚙</Text>
+          <Text style={styles.tabLabel}>설정</Text>
+        </Pressable>
+      </View>
 
       <SendModal
         visible={sendVisible}
@@ -182,25 +210,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121212",
   },
+
+  // Header
   header: {
     flexDirection: "row",
-    justifyContent: "flex-end",
     alignItems: "center",
-    paddingHorizontal: 20,
+    justifyContent: "space-between",
+    paddingHorizontal: 22,
     paddingTop: 8,
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
-  headerSpacer: {
-    flex: 1,
+  headerLogo: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#3182f6",
+    letterSpacing: -0.5,
   },
   menuButton: {
-    padding: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#1e1e1e",
+    alignItems: "center",
+    justifyContent: "center",
   },
   menuIcon: {
-    fontSize: 24,
+    fontSize: 18,
     color: "#f5f5f5",
     fontWeight: "600",
+    lineHeight: 22,
   },
+
+  // Menu modal
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
@@ -211,13 +252,14 @@ const styles = StyleSheet.create({
   },
   menuPanel: {
     width: 220,
-    height: SCREEN_HEIGHT * 0.22,
     backgroundColor: "#1e1e1e",
     borderRadius: 20,
     paddingVertical: 20,
     paddingHorizontal: 4,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
     shadowColor: "#000",
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.3,
     shadowRadius: 24,
     shadowOffset: { width: 0, height: 8 },
     elevation: 12,
@@ -238,27 +280,25 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#333333",
+    backgroundColor: "#2a2a2a",
     alignItems: "center",
     justifyContent: "center",
   },
   closeButtonPressed: {
-    backgroundColor: "#404040",
+    backgroundColor: "#333333",
   },
   closeIcon: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     color: "#9ca3af",
   },
   menuDivider: {
     height: 1,
-    backgroundColor: "#333333",
+    backgroundColor: "#2a2a2a",
     marginHorizontal: 16,
     marginBottom: 12,
   },
   menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
     paddingVertical: 16,
     paddingHorizontal: 20,
     marginHorizontal: 12,
@@ -272,29 +312,73 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#e11d48",
   },
-  container: {
+
+  // Scroll
+  scroll: {
     flex: 1,
-    backgroundColor: "#121212",
   },
-  content: {
+  scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 40,
+    paddingTop: 8,
+    paddingBottom: 24,
+    gap: 16,
   },
+
+  // Send button
   sendButton: {
-    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#3182f6",
     borderRadius: 16,
     paddingVertical: 18,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
+    gap: 8,
   },
   sendButtonPressed: {
     opacity: 0.82,
   },
+  sendButtonIcon: {
+    fontSize: 18,
+    color: "#ffffff",
+    fontWeight: "700",
+  },
   sendButtonText: {
     color: "#ffffff",
     fontSize: 17,
-    fontWeight: "700" as const,
+    fontWeight: "700",
+  },
+
+  // Bottom tab bar
+  tabBar: {
+    flexDirection: "row",
+    backgroundColor: "#1e1e1e",
+    borderTopWidth: 1,
+    borderTopColor: "#2a2a2a",
+    paddingBottom: 20,
+    paddingTop: 10,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: "center",
+    gap: 4,
+  },
+  tabItemActive: {
+    // active state handled via text color
+  },
+  tabIcon: {
+    fontSize: 20,
+    color: "#6b7280",
+  },
+  tabIconActive: {
+    color: "#3182f6",
+  },
+  tabLabel: {
+    fontSize: 11,
+    color: "#6b7280",
+    fontWeight: "500",
+  },
+  tabLabelActive: {
+    color: "#3182f6",
+    fontWeight: "700",
   },
 });

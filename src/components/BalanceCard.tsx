@@ -24,7 +24,10 @@ export default function BalanceCard({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.cardTitle}>지갑 잔액</Text>
+        <View>
+          <Text style={styles.cardTitle}>지갑 잔액</Text>
+          <Text style={styles.networkLabel}>Sepolia 네트워크 · ZUSDC</Text>
+        </View>
         <Pressable
           onPress={onRefresh}
           style={({ pressed }) => [
@@ -37,10 +40,6 @@ export default function BalanceCard({
         </Pressable>
       </View>
 
-      <Text style={styles.description}>
-        Sepolia 네트워크 ZUSDC
-      </Text>
-
       <View style={styles.divider} />
 
       {loading ? (
@@ -51,7 +50,9 @@ export default function BalanceCard({
       ) : (
         <>
           <View style={styles.balanceRow}>
-            <Text style={styles.balance}>{balance}</Text>
+            <Text style={styles.balance}>
+              {Number(balance).toLocaleString("ko-KR", { maximumFractionDigits: 4 })}
+            </Text>
             <Text style={styles.symbol}>ZUSDC</Text>
           </View>
           {walletAddress ? (
@@ -71,48 +72,45 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#1e1e1e",
     borderRadius: 24,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
+    padding: 22,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
   },
   header: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "space-between",
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "600",
     color: "#f5f5f5",
+    marginBottom: 3,
+  },
+  networkLabel: {
+    fontSize: 12,
+    color: "#6b7280",
+    fontWeight: "500",
   },
   refreshButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#252525",
+    backgroundColor: "rgba(49, 130, 246, 0.1)",
     alignItems: "center",
     justifyContent: "center",
   },
   refreshButtonPressed: {
-    backgroundColor: "#333333",
+    backgroundColor: "rgba(49, 130, 246, 0.18)",
   },
   refreshIcon: {
-    fontSize: 22,
+    fontSize: 20,
     color: "#3182f6",
     fontWeight: "600",
   },
-  description: {
-    marginTop: 8,
-    fontSize: 14,
-    color: "#9ca3af",
-    lineHeight: 21,
-  },
   divider: {
     height: 1,
-    backgroundColor: "#333333",
+    backgroundColor: "#2a2a2a",
     marginVertical: 18,
   },
   loadingBox: {
@@ -121,7 +119,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#9ca3af",
   },
   balanceRow: {
@@ -130,25 +128,25 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   balance: {
-    fontSize: 36,
+    fontSize: 38,
     fontWeight: "700",
     color: "#f5f5f5",
     letterSpacing: -1,
   },
   symbol: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#9ca3af",
     fontWeight: "600",
   },
   address: {
-    marginTop: 12,
-    fontSize: 14,
-    color: "#9ca3af",
+    marginTop: 10,
+    fontSize: 13,
+    color: "#6b7280",
     fontWeight: "500",
   },
   errorText: {
     marginTop: 12,
-    fontSize: 14,
+    fontSize: 13,
     color: "#e11d48",
     fontWeight: "600",
   },

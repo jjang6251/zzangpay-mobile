@@ -52,6 +52,47 @@ export async function getUserTotalBalance(): Promise<string> {
     return ethers.formatUnits(balance, decimals);
 }
 
+export type TransactionRecord = {
+  hash: string;
+  from: string;
+  to: string;
+  amount: string;
+  blockNumber: number;
+  type: "sent" | "received";
+};
+
+export async function getTransactionHistory(): Promise<TransactionRecord[]> {
+  const { contract, wallet } = await getUserWalletContract();
+  const decimals = await contract.decimals();
+
+  const [sentEvents, receivedEvents] = await Promise.all([
+    contract.queryFilter(contract.filters.Transfer(wallet.address, null), -50000),
+    contract.queryFilter(contract.filters.Transfer(null, wallet.address), -50000),
+  ]);
+
+  const seen = new Set<string>();
+  const allEvents = [...sentEvents, ...receivedEvents]
+    .filter((e) => {
+      if (seen.has(e.transactionHash)) return false;
+      seen.add(e.transactionHash);
+      return true;
+    })
+    .sort((a, b) => b.blockNumber - a.blockNumber);
+
+  return allEvents.map((event) => {
+    const log = event as ethers.EventLog;
+    const isSent = log.args[0].toLowerCase() === wallet.address.toLowerCase();
+    return {
+      hash: log.transactionHash,
+      from: log.args[0],
+      to: log.args[1],
+      amount: ethers.formatUnits(log.args[2], decimals),
+      blockNumber: log.blockNumber,
+      type: isSent ? "sent" : "received",
+    };
+  });
+}
+
 export async function sendToken(toAddress: string, amount: number): Promise<string> {
     if (!ethers.isAddress(toAddress)) {
         throw new Error("유효하지 않은 주소예요.");
